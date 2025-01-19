@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Reviews</title>
+    <script>
+        async function fetchReviews() {
+            const url = document.getElementById('product-url').value;
+            if (!url) {
+                alert('Please enter a valid URL.');
+                return;
+            }
+
+            // Show loading message
+            document.getElementById('reviews').innerHTML = "<p>Loading...</p>";
+
+            // Call the Flask API with the URL input by the user
+            const response = await fetch(`/api/reviews?page=${encodeURIComponent(url)}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                // Clear previous reviews
+                document.getElementById('reviews').innerHTML = `<h3>Total Reviews: ${data.reviews_count}</h3>`;
+
+                // Display the reviews
+                data.reviews.forEach(review => {
+                    const reviewDiv = document.createElement('div');
+                    reviewDiv.innerHTML = `
+                        <h4>${review.title}</h4>
+                        <p>${review.body}</p>
+                        <p><strong>Rating:</strong> ${review.rating}</p>
+                        <p><strong>Reviewer:</strong> ${review.reviewer}</p>
+                    `;
+                    document.getElementById('reviews').appendChild(reviewDiv);
+                });
+            } else {
+                alert('Error fetching reviews: ' + data.error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Product Review Scraper</h1>
+        <label for="product-url">Enter Product URL:</label>
+        <input type="text" id="product-url" placeholder="Enter URL here" />
+        <button onclick="fetchReviews()">Fetch Reviews</button>
+    </div>
+    
+    <div id="reviews"></div>
+</body>
+</html>
