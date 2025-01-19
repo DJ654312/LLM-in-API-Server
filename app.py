@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from review_scraper import get_reviews
+import os
 
 app = Flask(__name__)
 
